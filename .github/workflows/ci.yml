@@ -1,15 +1,16 @@
 # Goal - I have to Lint, Build, Test the code for Frontend & Backend
 # then Push the images to DockerHub 
+#Pushing code to the advanced branch will trigger this workflow
 name: CI
 
 on: 
     push:
-        branches: [master]
+        branches: [advanced]
 
 jobs:
     frontend:
         # Github runner
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-latest
         steps:
           # getting github code locally on ubuntu runner
             - name: Checkout Code
