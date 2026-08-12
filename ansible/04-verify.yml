@@ -1,0 +1,36 @@
+---
+- name: Verify Phase 1 Bastion
+  hosts: devboard
+  become: true
+
+  tasks:
+    - name: Check installed tools
+      ansible.builtin.command:
+        cmd: "{{ item }}"
+      loop:
+        - aws --version
+        - terraform version
+        - ansible --version
+        - kubectl version --client
+        - helm version
+        - docker --version
+        - git --version
+        - jq --version
+      register: tool_check
+      changed_when: false
+
+    - name: Display tool versions
+      ansible.builtin.debug:
+        msg: "{{ item.item }} -> {{ (item.stdout or item.stderr).splitlines() | first }}"
+      loop: "{{ tool_check.results }}"
+
+    - name: Verify AWS IAM authentication
+      ansible.builtin.command:
+        cmd: aws sts get-caller-identity --output json
+      become_user: "{{ login_user }}"
+      register: aws_identity
+      changed_when: false
+
+    - name: Display AWS identity
+      ansible.builtin.debug:
+        msg: "{{ aws_identity.stdout }}"

@@ -1,0 +1,14 @@
+---
+# Run the Phase 1 Bastion configuration in order.
+
+- name: Install Bastion tools
+  ansible.builtin.import_playbook: 01-install-tools.yml
+
+- name: Configure AWS and shell
+  ansible.builtin.import_playbook: 02-configure-aws.yml
+
+- name: Clone DevBoard repository
+  ansible.builtin.import_playbook: 03-clone-repo.yml
+
+- name: Verify Bastion
+  ansible.builtin.import_playbook: 04-verify.yml

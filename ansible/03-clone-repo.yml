@@ -1,0 +1,13 @@
+---
+- name: Clone DevBoard repository
+  hosts: devboard
+  become: true
+
+  tasks:
+    - name: Clone repository
+      ansible.builtin.git:
+        repo: "{{ repo_url }}"
+        dest: "/home/{{ login_user }}/devboard"
+        version: "{{ repo_branch }}"
+        update: false
+      become_user: "{{ login_user }}"

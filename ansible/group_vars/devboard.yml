@@ -1,0 +1,9 @@
+---
+aws_region: us-west-2
+login_user: ubuntu
+
+# No static AWS credentials are used.
+# The Bastion EC2 uses its IAM Instance Profile.
+
+repo_url: https://github.com/UpgradSaurabh/devboard.git
+repo_branch: dora-sota-implementation
