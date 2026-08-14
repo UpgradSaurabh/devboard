@@ -1,0 +1,90 @@
+name: DORA Metrics
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 2 * * 1"
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  dora-metrics:
+    name: Collect DORA Metrics
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Calculate deployment frequency
+        shell: bash
+        run: |
+          set -e
+
+          echo "======================================"
+          echo "        DORA Metrics Report"
+          echo "======================================"
+          echo ""
+
+          DEPLOYMENTS=$(git log \
+            --all \
+            --since="30 days ago" \
+            --grep="ci: deploy" \
+            -i \
+            --pretty=format:'%H' | wc -l)
+
+          echo "Deployment Frequency"
+          echo "--------------------"
+          echo "Successful deployment commits: $DEPLOYMENTS"
+          echo ""
+
+          echo "Deployment History"
+          echo "------------------"
+
+          git log \
+            --all \
+            --since="30 days ago" \
+            --grep="ci: deploy" \
+            -i \
+            --date=iso \
+            --pretty=format:'%h | %ad | %an | %s' || true
+
+          echo ""
+          echo ""
+
+      - name: Collect workflow execution evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          echo "Workflow Execution History"
+          echo "--------------------------"
+
+          gh run list \
+            --repo "$GH_REPO" \
+            --limit 20 \
+            --json databaseId,name,status,conclusion,createdAt,updatedAt,headBranch \
+            --template '{{range .}}{{.databaseId}} | {{.name}} | {{.status}} | {{.conclusion}} | {{.createdAt}} | {{.updatedAt}} | {{.headBranch}}{{"\n"}}{{end}}'
+
+          echo ""
+
+      - name: Generate DORA summary
+        shell: bash
+        run: |
+          echo "======================================"
+          echo "DORA Evidence Collection Completed"
+          echo "======================================"
+          echo ""
+          echo "Metrics covered:"
+          echo "- Deployment Frequency"
+          echo "- Deployment history"
+          echo "- CI/CD workflow execution history"
+          echo ""
+          echo "Lead Time, Change Failure Rate and MTTR"
+          echo "require correlation of commit, deployment,"
+          echo "failure and recovery timestamps."
