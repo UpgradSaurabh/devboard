@@ -45,3 +45,15 @@ variable "node_disk_size" {
   type        = number
   default     = 30
 }
+
+variable "enable_argocd" {
+  description = "Enable Argo CD installation."
+  type        = bool
+  default     = true
+}
+
+variable "argocd_chart_version" {
+  description = "Argo CD Helm chart version."
+  type        = string
+  default     = "7.8.26"
+}
