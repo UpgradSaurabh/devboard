@@ -67,6 +67,7 @@ spec:
         name: data
         namespace: devboard
       spec:
+        storageClassName: gp2
         accessModes:
           - ReadWriteOnce
         resources:

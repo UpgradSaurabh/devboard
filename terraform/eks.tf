@@ -15,7 +15,8 @@ module "eks" {
   control_plane_subnet_ids = module.vpc.intra_subnets
 
   addons = {
-    coredns    = {}
+    coredns = {}
+
     kube-proxy = {}
 
     vpc-cni = {
@@ -26,9 +27,18 @@ module "eks" {
       before_compute = true
     }
 
-    metrics-server     = {}
-    aws-ebs-csi-driver = {}
+    metrics-server = {}
+
+    aws-ebs-csi-driver = {
+      pod_identity_association = [
+        {
+          role_arn        = aws_iam_role.ebs_csi.arn
+          service_account = "ebs-csi-controller-sa"
+        }
+      ]
+    }
   }
+
 
   eks_managed_node_groups = {
     default = {
