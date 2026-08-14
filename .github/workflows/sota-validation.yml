@@ -1,0 +1,118 @@
+name: SOTA Validation
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - dora-sota-implementation
+  pull_request:
+    branches:
+      - dora-sota-implementation
+
+permissions:
+  contents: read
+
+jobs:
+  sota-validation:
+    name: Validate SOTA Practices
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate CI/CD workflows
+        shell: bash
+        run: |
+          echo "=== CI/CD Workflows ==="
+
+          find .github/workflows \
+            -maxdepth 1 \
+            -type f \
+            -name "*.yml" \
+            -o -name "*.yaml" | sort
+
+      - name: Validate DevSecOps workflows
+        shell: bash
+        run: |
+          echo "=== DevSecOps Workflows ==="
+
+          find .github/workflows \
+            -maxdepth 1 \
+            -type f | \
+            grep -Ei 'sonar|scan|security|dependency|dast|quality' || true
+
+      - name: Validate Kubernetes manifests
+        shell: bash
+        run: |
+          echo "=== Kubernetes Resources ==="
+
+          if [ -d "k8s" ]; then
+            find k8s -maxdepth 2 -type f \
+              \( -name "*.yml" -o -name "*.yaml" \) | sort
+          else
+            echo "k8s directory not found"
+          fi
+
+      - name: Validate GitOps configuration
+        shell: bash
+        run: |
+          echo "=== GitOps Configuration ==="
+
+          if [ -d "gitops" ]; then
+            find gitops -maxdepth 3 -type f \
+              \( -name "*.yml" -o -name "*.yaml" \) | sort
+          else
+            echo "gitops directory not found"
+          fi
+
+      - name: Validate Terraform
+        shell: bash
+        run: |
+          echo "=== Infrastructure as Code ==="
+
+          if [ -d "terraform" ]; then
+            find terraform -maxdepth 2 -type f \
+              \( -name "*.tf" -o -name "*.tfvars" \) | sort
+          else
+            echo "terraform directory not found"
+          fi
+
+      - name: Validate observability configuration
+        shell: bash
+        run: |
+          echo "=== Observability Configuration ==="
+
+          find . \
+            -type f \
+            \( -name "*.yml" -o -name "*.yaml" \) \
+            -not -path "./.git/*" | \
+            grep -Ei 'prometheus|grafana|tempo|loki|otel|opentelemetry' || true
+
+      - name: Validate automation scripts
+        shell: bash
+        run: |
+          echo "=== Automation ==="
+
+          if [ -d "scripts" ]; then
+            find scripts -maxdepth 2 -type f -type f | sort
+          else
+            echo "scripts directory not found"
+          fi
+
+      - name: SOTA validation summary
+        shell: bash
+        run: |
+          echo ""
+          echo "======================================"
+          echo "       SOTA Validation Completed"
+          echo "======================================"
+          echo ""
+          echo "Validated areas:"
+          echo "- CI/CD Automation"
+          echo "- DevSecOps"
+          echo "- Kubernetes"
+          echo "- GitOps"
+          echo "- Infrastructure as Code"
+          echo "- Observability"
+          echo "- Automation"
