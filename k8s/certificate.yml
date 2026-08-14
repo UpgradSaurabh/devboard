@@ -1,4 +1,6 @@
-# Change this DNS name before applying.
+# Lives in devboard because a Gateway listener can only reference a Secret in its
+# own namespace. Start on staging, confirm Ready, then switch to prod - in GIT,
+# since selfHeal reverts kubectl patch.
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
@@ -7,7 +9,7 @@ metadata:
 spec:
   secretName: devboard-tls
   dnsNames:
-    - devboard.example.com
+    - devboard-saurabh.duckdns.org
   issuerRef:
     name: letsencrypt-staging
     kind: ClusterIssuer
@@ -16,4 +18,5 @@ spec:
     algorithm: ECDSA
     size: 256
     rotationPolicy: Always
+  # Let's Encrypt certs last 90 days; renew 30 days out.
   renewBefore: 720h
