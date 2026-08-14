@@ -20,7 +20,7 @@ spec:
     - name: https
       protocol: HTTPS
       port: 443
-      hostname: devboard.trainwithshubham.com
+      hostname: devboard-saurabh.duckdns.org
       tls:
         mode: Terminate
         certificateRefs:
