@@ -1,9 +1,12 @@
 ---
+# Values used by the bastion Ansible playbooks.
+# Keep these in one place so the playbooks stay easy to read.
+
 aws_region: us-west-2
 login_user: ubuntu
 
-# No static AWS credentials are used.
-# The Bastion EC2 uses its IAM Instance Profile.
+# The bastion uses its IAM instance profile for AWS access.
+# No AWS access keys are stored here.
 
 repo_url: https://github.com/UpgradSaurabh/devboard.git
 repo_branch: dora-sota-implementation

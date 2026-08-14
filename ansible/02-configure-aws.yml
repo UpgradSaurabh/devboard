@@ -1,29 +1,32 @@
 ---
-- name: Configure AWS and shell
+- name: Configure AWS settings and shell aliases
   hosts: devboard
   become: true
+
+  vars:
+    aws_home: "/home/{{ login_user }}/.aws"
 
   tasks:
     - name: Create AWS config directory
       ansible.builtin.file:
-        path: "/home/{{ login_user }}/.aws"
+        path: "{{ aws_home }}"
         state: directory
         owner: "{{ login_user }}"
         group: "{{ login_user }}"
         mode: "0700"
 
-    - name: Configure AWS region
+    - name: Set default AWS region
       ansible.builtin.copy:
         content: |
           [default]
           region = {{ aws_region }}
           output = json
-        dest: "/home/{{ login_user }}/.aws/config"
+        dest: "{{ aws_home }}/config"
         owner: "{{ login_user }}"
         group: "{{ login_user }}"
         mode: "0600"
 
-    - name: Configure shell environment
+    - name: Add shell helpers for AWS and Kubernetes
       ansible.builtin.copy:
         content: |
           export AWS_REGION={{ aws_region }}

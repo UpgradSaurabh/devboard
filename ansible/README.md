@@ -1,28 +1,43 @@
-# Phase 1 - Bastion Ansible
+# Bastion setup with Ansible
 
-This Ansible setup is adapted from the DevBoard mega-project Ansible structure.
+This folder installs and configures the DevBoard bastion host.
 
-It is intended for the Bastion host in Phase 1.
+## Simple flow
 
-## Flow
+1. Create the bastion host with Terraform.
+2. SSH into the bastion.
+3. Install Ansible on the bastion.
+4. Run the playbooks from this folder.
+5. Verify the installed tools.
 
-1. Create Bastion using Terraform.
-2. SSH into Bastion.
-3. Install Ansible on Bastion using `bootstrap-ansible.sh`.
-4. Run `site.yml` locally on the Bastion.
-5. Verify the required DevOps tools.
+The bastion uses its IAM instance profile for AWS access, so no static AWS keys are needed.
 
-AWS access uses the IAM Instance Profile attached to the Bastion. No AWS access keys are required.
+## Files
 
-## Run
+- `site.yml` runs everything in order
+- `01-install-tools.yml` installs Terraform, AWS CLI, kubectl, Helm, Docker, and common tools
+- `02-configure-aws.yml` sets AWS region and shell settings
+- `03-clone-repo.yml` downloads the repository
+- `04-verify.yml` checks that the tools are installed correctly
+
+## Run it
 
 ```bash
 cd ansible
 ansible-playbook -i inventory.ini site.yml
 ```
 
-For verification only:
+## Verify only
 
 ```bash
 ansible-playbook -i inventory.ini 04-verify.yml
 ```
+
+## Important values
+
+The variables are defined in `group_vars/devboard.yml`.
+
+- `aws_region`
+- `login_user`
+- `repo_url`
+- `repo_branch`
